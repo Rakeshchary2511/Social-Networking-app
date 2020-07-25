@@ -28,7 +28,9 @@ router.post(
     try {
       let user = await User.findOne({ email });
       if (user) {
-        res.status(400).json({ errors: [{ msg: "User already exists !!" }] });
+        return res
+          .status(400)
+          .json({ errors: [{ msg: "User already exists !!" }] });
       }
 
       const avatar = gravatar.url(email, {
@@ -44,10 +46,11 @@ router.post(
         password,
       });
 
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash("password", salt);
+      user.password = await bcrypt.hashSync(password, 10);
 
       await user.save();
+
+      res.send("User Registered");
 
       const payload = {
         user: {
@@ -62,15 +65,13 @@ router.post(
         (err, token) => {
           if (err) throw err;
           console.log(token);
-          res.status(200).json({ token });
+          res.json(token);
         }
       );
     } catch (err) {
       console.error(err.message);
       res.status(500).send("Server Error !");
     }
-
-    res.send("User Registered");
   }
 );
 module.exports = router;
