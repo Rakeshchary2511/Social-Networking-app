@@ -112,12 +112,12 @@ router.get("/", async (req, res) => {
     res.json(profiles);
   } catch (err) {
     console.error(err);
-    res.status(500).send({ msg: "Server Found !!" });
+    res.status(500).send({ msg: "Server Error !!" });
   }
 });
 
 //@route GET api/profile
-//@desc Create or Update user profile
+//@desc Gete user profile by user Id
 //@access private
 router.get("/user/:userId", async (req, res) => {
   try {
@@ -133,7 +133,27 @@ router.get("/user/:userId", async (req, res) => {
     if (err.kind == "ObjectId") {
       return res.status(400).send({ msg: "Profile not found!!" });
     }
-    res.status(500).send({ msg: "Server Found !!" });
+    res.status(500).send({ msg: "Server Error !!" });
+  }
+});
+
+//@route DELETE api/profile
+//@desc Delete User & profile
+//@access private
+router.delete("/", auth, async (req, res) => {
+  try {
+    //@todo - remove users posts
+
+    //Remove Profile of User!!
+    await Profile.findOneAndDelete({ user: req.user.id });
+
+    //Remove User
+    await User.findOneAndDelete({ _id: req.user.id });
+
+    res.json({ msg: "User Deleted !!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ msg: " Server Error !!" });
   }
 });
 
