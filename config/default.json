@@ -1,4 +1,6 @@
 {
   "mongoURI": "mongodb+srv://loneBeast123:loneBeast123@cluster0.ouwvo.mongodb.net/<dbname>?retryWrites=true&w=majority",
-  "jwtSecret": "mySecretKey"
+  "jwtSecret": "mySecretKey",
+  "githubClientId": "3a7c34695d02119c0b12",
+  "githubClientSecret": "2600bed2f197f68884ae0d262a12ef8e8a093856"
 }
