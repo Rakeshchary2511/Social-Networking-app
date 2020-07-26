@@ -71,7 +71,7 @@ router.post(
       res.status(500).send("Server Error !");
     }
 
-    res.send("User Registered");
+    res.send("Login Successfull!! ");
   }
 );
 module.exports = router;
