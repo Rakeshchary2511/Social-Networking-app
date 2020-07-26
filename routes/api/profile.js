@@ -63,6 +63,7 @@ router.post("/", [
     if (website) profileFields.website = website;
     if (bio) profileFields.bio = bio;
     if (status) profileFields.status = status;
+    if (location) profileFields.location = location;
     if (skills) {
       profileFields.skills = skills.split(",").map((skill) => skill.trim());
     }
@@ -112,28 +113,28 @@ router.get("/", async (req, res) => {
     res.json(profiles);
   } catch (err) {
     console.error(err);
-    res.status(500).send({ msg: "Server Error !!" });
+    res.status(500).send("Server Error !!");
   }
 });
 
 //@route GET api/profile
 //@desc Gete user profile by user Id
 //@access private
-router.get("/user/:userId", async (req, res) => {
+router.get("/user/:user_id", async ({ params: { user_id } }, res) => {
   try {
     const profile = await Profile.findOne({
-      user: req.params.userId,
+      user: user_id,
     }).populate("user", ["name", "avatar"]);
     if (!profile) {
-      return res.status(400).send({ msg: "Profile not found!!" });
+      return res.status(400).send("Profile not found!!");
     }
-    res.json(profile);
+    return res.json(profile);
   } catch (err) {
-    console.error(err);
+    console.error(err.message);
     if (err.kind == "ObjectId") {
-      return res.status(400).send({ msg: "Profile not found!!" });
+      return res.status(400).send("Profile not found!!");
     }
-    res.status(500).send({ msg: "Server Error !!" });
+    return res.status(500).send("Server Error !!");
   }
 });
 
@@ -213,4 +214,28 @@ router.put(
   }
 );
 
+//@route DELETE api/profile/experience/:exp_id
+//@desc Delete Users Profile Experience
+//@access private
+router.delete("/experience/:exp_id", auth, async (req, res) => {
+  try {
+    const profile = await Profile.findOne({ user: req.user.id });
+    if (!profile) {
+      return res.status(400).send({ msg: "Profile not found!!" });
+    }
+
+    const removeIndex = await profile.experience
+      .map((item) => item.id)
+      .indexOf(req.params.exp_id);
+
+    profile.experience.splice(removeIndex, 1);
+
+    await profile.save();
+
+    res.json(profile);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(" Server Error !!");
+  }
+});
 module.exports = router;
